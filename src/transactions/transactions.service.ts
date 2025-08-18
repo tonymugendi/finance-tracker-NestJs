@@ -15,7 +15,7 @@ export class TransactionsService {
         return this.transactions.find(tx => tx.id === id);
     }
 
-    create(transaction: {description: string; amount: number}) {
+    create(transaction: { description: string; amount: number }) {
         const newTransaction = {
             id: this.transactions.length + 1,
             ...transaction
@@ -25,9 +25,19 @@ export class TransactionsService {
         return newTransaction;
     }
 
+    update(id: number, updateData: { description?: string; amount?: number }) {
+        const transaction = this.transactions.find(tx => tx.id === id);
+
+        if (!transaction) return null;
+
+        Object.assign(transaction, updateData);
+        return transaction;
+
+    }
+
     remove(id: number) {
         const index = this.transactions.findIndex(tx => tx.id === id);
-        if(index === -1) return null;
+        if (index === -1) return null;
         const removed = this.transactions.splice(index, 1);
         return removed[0]
     }

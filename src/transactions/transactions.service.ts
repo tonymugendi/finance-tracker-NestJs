@@ -1,44 +1,45 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Transaction } from './entities/transaction.entity';
 
 @Injectable()
 export class TransactionsService {
-    private transactions = [
-        { id: 1, description: 'Grocery shopping', amount: -50 },
-        { id: 2, description: 'Salary', amount: 2000 },
-    ]
+    constructor(
+        @InjectRepository(Transaction)
+        private transactionRepo: Repository<Transaction>
+    ) { }
+
+    // private transactions = [
+    //     { id: 1, description: 'Grocery shopping', amount: -50 },
+    //     { id: 2, description: 'Salary', amount: 2000 },
+    // ]
 
     findAll() {
-        return this.transactions
+        return this.transactionRepo.find()
     }
 
     findOne(id: number) {
-        return this.transactions.find(tx => tx.id === id);
+        return this.transactionRepo.findOneBy({ id });
     }
 
     create(transaction: { description: string; amount: number }) {
-        const newTransaction = {
-            id: this.transactions.length + 1,
-            ...transaction
-        };
-
-        this.transactions.push(newTransaction);
-        return newTransaction;
+       const newTransaction = this.transactionRepo.create(transaction);
+       return this.transactionRepo.save(newTransaction)
     }
 
-    update(id: number, updateData: { description?: string; amount?: number }) {
-        const transaction = this.transactions.find(tx => tx.id === id);
+    // update(id: number, updateData: { description?: string; amount?: number }) {
+    //     const transaction = this.transactions.find(tx => tx.id === id);
 
-        if (!transaction) return null;
+    //     if (!transaction) return null;
 
-        Object.assign(transaction, updateData);
-        return transaction;
+    //     Object.assign(transaction, updateData);
+    //     return transaction;
 
-    }
+    // }
 
-    remove(id: number) {
-        const index = this.transactions.findIndex(tx => tx.id === id);
-        if (index === -1) return null;
-        const removed = this.transactions.splice(index, 1);
-        return removed[0]
+    async remove(id: number) {
+        const result = await this.transactionRepo.delete(id);
+        return result.affected ? true : false;
     }
 }

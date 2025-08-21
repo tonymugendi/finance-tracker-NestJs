@@ -1,19 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Transaction } from './entities/transaction.entity';
+import { Category } from 'src/categories/entities/category.entity';
+import { CreateTransactionDto } from './dto/create-transaction.dto';
 
 @Injectable()
 export class TransactionsService {
     constructor(
         @InjectRepository(Transaction)
-        private transactionRepo: Repository<Transaction>
-    ) { }
+        private transactionRepo: Repository<Transaction>,
 
-    // private transactions = [
-    //     { id: 1, description: 'Grocery shopping', amount: -50 },
-    //     { id: 2, description: 'Salary', amount: 2000 },
-    // ]
+        @InjectRepository(Category)
+        private readonly categoryRepo: Repository<Category>
+    ) { }
 
     findAll() {
         return this.transactionRepo.find()
@@ -23,8 +23,19 @@ export class TransactionsService {
         return this.transactionRepo.findOneBy({ id });
     }
 
-    create(transaction: { description: string; amount: number }) {
-       const newTransaction = this.transactionRepo.create(transaction);
+    async create(transactionDto: CreateTransactionDto) {
+
+        const category = await this.categoryRepo.findOneBy({id: transactionDto.categoryId});
+        if (!category) {
+            throw new NotFoundException('Category not found')
+        }
+
+        const newTransaction = this.transactionRepo.create({
+            description: transactionDto.description,
+            amount: transactionDto.amount,
+            category
+        });
+
        return this.transactionRepo.save(newTransaction)
     }
 

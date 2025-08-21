@@ -7,4 +7,5 @@ export class CreateTransactionDto {
 
     @IsNumber()
     amount: number
+    categoryId: number
 }

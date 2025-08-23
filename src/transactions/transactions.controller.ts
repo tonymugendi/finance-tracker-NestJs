@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { UpdateTransactionDto } from './dto/update-transaction.dto';
@@ -13,8 +13,8 @@ export class TransactionsController {
     }
 
     @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.transactionService.findOne(Number(id));
+    findOne(@Param('id', ParseIntPipe) id: number) {
+        return this.transactionService.findOne(id);
     }
 
     @Post()
@@ -23,13 +23,28 @@ export class TransactionsController {
     }
 
     // @Patch()
-    // update(@Param('id') id: string, @Body() body: UpdateTransactionDto) {
-    //     return this.transactionService.update(Number(id), body)
+    // update(@Param('id', ParseIntPipe) id: number, @Body() body: UpdateTransactionDto) {
+    //     return this.transactionService.update(id, body)
     // }
 
     @Delete(':id')
-    remove(@Param('id') id: string) {
+    remove(@Param('id', ParseIntPipe) id: number) {
         this.transactionService.remove(Number(id))
+    }
+
+    @Get('/category/:categoryId')
+    findByCategory(@Param('categoryId', ParseIntPipe) categoryId: number) {
+        return this.transactionService.findByCategory(categoryId);
+    }
+
+    @Get('/totals/by-category')
+    totalsByCategory() {
+        return this.transactionService.totalsByCategory();
+    }
+
+    @Get('/summary')
+    summary() {
+        return this.transactionService.summary();
     }
 
 }

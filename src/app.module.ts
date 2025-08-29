@@ -5,6 +5,7 @@ import { TransactionsModule } from './transactions/transactions.module';
 import { ConfigModule } from '@nestjs/config';
 import { CategoriesModule } from './categories/categories.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UsersModule } from './users/users.module';
 
 
 @Module({
@@ -22,7 +23,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     autoLoadEntities: true, // automatically loads entities from modules
     synchronize: true, // ⚠️ auto-creates schema in dev (not for prod)
   }),
-  TransactionsModule, CategoriesModule],
+  TransactionsModule, CategoriesModule, UsersModule],
   controllers: [AppController],
   providers: [AppService],
 })
